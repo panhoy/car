@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMW Premium Selection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    /* Global Styles & Resets */
+:root {
+    --bg-dark: #1a1a1a; /* Main dark background */
+    --bg-section-dark: #222227; /* Slightly lighter dark for sections */
+    --text-light: #e0e0e0;
+    --text-medium: #b0b0b0;
+    --text-heading: #ffffff;
+    --accent-gray: #4a4a4a;
+    --button-primary-bg: #3a3f44; /* Hero button */
+    --button-secondary-bg: #505050; /* Read more buttons */
+    --button-tertiary-bg: #333; /* Featured car buttons */
+    --border-light: #333;
+    --bmw-blue-accent: #0066b1; /* Optional for highlights if needed */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    line-height: 1.6;
+    /* Subtle dot pattern for the overall page body */
+    background-image: radial-gradient(circle, rgba(255,255,255,0.03) 0.5px, transparent 0.5px);
+    background-size: 8px 8px;
+}
+
+.website-wrapper {
+    /* This would be the 'monitor screen' content */
+    /* background-color: #111; /* Darker base if needed */
+    overflow-x: hidden; /* Prevent horizontal scroll from angled elements */
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+a {
+    color: var(--text-light);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--text-heading);
+}
+
+h1, h2, h3, h4 {
+    color: var(--text-heading);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: var(--text-medium);
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9em;
+}
+
+.btn-primary {
+    background-color: var(--button-primary-bg);
+}
+.btn-primary:hover {
+    background-color: #4a4f55;
+}
+
+.btn-secondary {
+    background-color: var(--button-secondary-bg);
+}
+.btn-secondary:hover {
+    background-color: #606060;
+}
+.btn-tertiary {
+    background-color: var(--button-tertiary-bg);
+    padding: 8px 18px;
+    font-size: 0.8em;
+}
+.btn-tertiary:hover {
+    background-color: #444;
+}
+
+/* Header & Navigation */
+.main-header {
+    background-color: var(--bg-section-dark); /* Or a gradient/image from the original */
+    padding-top: 20px;
+}
+
+.top-nav, .bottom-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.bottom-nav {
+    border-top: 1px solid var(--border-light);
+    border-bottom: none;
+}
+
+.nav-links a {
+    margin: 0 15px;
+    font-size: 0.9em;
+    text-transform: capitalize;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo .logo {
+    height: 40px; /* Adjust as needed */
+    margin-right: 10px;
+}
+
+.nav-logo span {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--text-heading);
+}
+
+/* Hero Section */
+.hero-section {
+    background: var(--bg-section-dark) url('images/hero-bg-texture.png'); /* Add subtle texture if visible */
+    background-size: cover;
+    padding: 60px 0;
+    position: relative;
+}
+
+.hero-content-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hero-text {
+    flex-basis: 50%;
+    padding-right: 30px;
+}
+
+.hero-text h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.hero-text p {
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    color: var(--text-medium);
+}
+
+.hero-image {
+    flex-basis: 50%;
+    text-align: right;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    /* Adjust positioning if needed to match image perspective */
+}
+
+/* Common Section Styles */
+.section-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    opacity: 0.3; /* Adjust opacity to make text readable */
+}
+
+/* Discover BMW & Service Selection Sections */
+.discover-bmw-section, .service-selection-section {
+    padding: 80px 0;
+    position: relative;
+    background-color: #1c1c21; /* Fallback / base color */
+}
+
+.discover-bmw-section .section-background { opacity: 0.15; }
+.service-selection-section .section-background { opacity: 0.25; }
+
+
+.content-overlap, .content-overlap-reverse {
+    display: flex;
+    align-items: center;
+    position: relative; /* For z-indexing if needed */
+}
+
+.content-overlap .text-content { flex: 1.2; padding-right: 40px; }
+.content-overlap .image-content { flex: 0.8; text-align: right; }
+
+.content-overlap-reverse .text-content { flex: 1.2; padding-left: 40px; order: 2; }
+.content-overlap-reverse .image-content-gallery { flex: 0.8; order: 1; }
+
+
+.discover-bmw-section .image-content img,
+.service-selection-section .image-content-gallery img {
+    max-width: 100%;
+    height: auto;
+    display: block; /* Remove extra space below image */
+}
+
+/* Angled effect for images in these sections (conceptual) */
+/* You might need more complex clipping or SVG masks for perfect angles */
+.discover-bmw-section .image-content {
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+.service-selection-section {
+    /* Angled top or bottom might be achieved with pseudo-elements or by clipping the background */
+}
+
+.service-selection-section .image-content-gallery {
+    display: flex;
+    gap: 15px; /* Space between thumbnails */
+}
+.service-selection-section .image-content-gallery img {
+    width: 32%; /* Roughly one third */
+    object-fit: cover;
+    border: 2px solid var(--border-light); /* Subtle border like in image */
+}
+
+
+/* Car Premium Selection (Garage) */
+.car-premium-garage-section {
+    padding: 80px 0;
+    background-color: #181818; /* Fallback */
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    position: relative;
+}
+
+.car-premium-garage-section .garage-content {
+    position: relative;
+}
+
+.car-premium-garage-section h3 {
+    position: absolute;
+    top: -40px; /* Adjust based on padding */
+    left: 0; /* Aligns to the container edge */
+    font-size: 1.8em;
+    color: var(--text-light);
+    background-color: rgba(0,0,0,0.5); /* Slight dark background for readability */
+    padding: 5px 10px;
+}
+
+.garage-car-image {
+    max-width: 70%; /* Adjust size as needed */
+    height: auto;
+    margin: 20px auto 30px;
+}
+
+.progress-bar-visual {
+    width: 60%;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 0 auto;
+    position: relative;
+    border-radius: 5px;
+}
+
+.progress-indicator {
+    width: 25%; /* Example fill */
+    height: 100%;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+
+/* Featured Cars Section */
+.featured-cars-section {
+    padding: 60px 0;
+    background-color: var(--bg-section-dark); /* Darker section background */
+}
+
+.featured-cars-section h2 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 40px;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.slider-arrow {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 15px;
+    font-size: 1.5em;
+    cursor: pointer;
+    z-index: 10;
+    height: 60px;
+    line-height: 30px;
+    border-radius: 3px;
+}
+.slider-arrow:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.prev-arrow { margin-right: 10px; }
+.next-arrow { margin-left: 10px; }
+
+
+.slider-track-container {
+    flex-grow: 1;
+    overflow: hidden; /* This is crucial for the sliding effect */
+}
+
+.slider-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.car-card {
+    min-width: 48%; /* Show 2 cards, adjust for gap */
+    margin-right: 2%; /* Gap between cards */
+    background-color: #2a2a30; /* Card background */
+    padding: 20px;
+    border-radius: 5px;
+    text-align: left;
+    border: 1px solid #38383f;
+}
+.car-card:last-child {
+    margin-right: 0;
+}
+
+.car-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border-radius: 3px;
+}
+
+.car-card h4 {
+    font-size: 1.3em;
+    margin-bottom: 5px;
+}
+.car-card .model-detail {
+    font-size: 0.9em;
+    color: var(--text-medium);
+    margin-bottom: 10px;
+}
+.car-card .spec {
+    font-size: 0.9em;
+    color: var(--text-light);
+    margin-bottom: 15px;
+}
+.car-card .price {
+    font-size: 1em;
+    font-weight: bold;
+    color: var(--text-heading);
+    margin-bottom: 5px;
+}
+.car-card .price-net {
+    font-size: 0.9em;
+    color: var(--text-medium);
+    margin-bottom: 15px;
+}
+
+/* Footer */
+.main-footer {
+    background-color: var(--bg-dark);
+    padding: 20px 0;
+    text-align: center;
+}
+
+.main-footer .nav-logo .logo { height: 30px; }
+.main-footer .nav-logo span { font-size: 1.2em; }
+.main-footer .nav-links a { font-size: 0.85em; margin: 0 10px;}
+
+
+.copyright {
+    margin-top: 20px;
+    font-size: 0.8em;
+    color: var(--text-medium);
+}
+
+/* Helper for angled dividers (simplified) - True angles may need SVG or complex clip-paths */
+/* Example: Add a class like 'angled-top-right' to a section */
+.angled-divider-visual {
+    position: relative;
+    overflow: hidden; /* Important for pseudo-elements */
+}
+.angled-divider-visual::before {
+    content: '';
+    position: absolute;
+    top: 0; /* or bottom: 0 */
+    left: 0;
+    width: 100%;
+    height: 100px; /* Adjust height of angle */
+    background-color: inherit; /* Or the color of the next/previous section */
+    /* transform: skewY(-3deg); */ /* Example skew */
+    /* transform-origin: top left; */
+    /* For more complex angles, clip-path is better on the section itself */
+}
+
+/* Media Queries (Basic Example) */
+@media (max-width: 992px) {
+    .hero-content-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    .hero-text { padding-right: 0; margin-bottom: 30px; }
+    .hero-image { text-align: center; }
+
+    .content-overlap, .content-overlap-reverse {
+        flex-direction: column;
+    }
+    .content-overlap .text-content, .content-overlap-reverse .text-content {
+        padding-right: 0;
+        padding-left: 0;
+        order: 1; /* Text usually comes first on mobile */
+        margin-bottom: 30px;
+    }
+     .content-overlap .image-content, .content-overlap-reverse .image-content-gallery {
+        order: 2;
+        text-align: center;
+        clip-path: none; /* Remove clip-path for simpler mobile layout */
+    }
+    .service-selection-section .image-content-gallery {
+        flex-direction: column; /* Stack thumbnails */
+    }
+    .service-selection-section .image-content-gallery img {
+        width: 80%; /* Adjust for stacked view */
+        margin: 0 auto 10px;
+    }
+
+    .car-card {
+        min-width: 90%; /* One card per view on smaller screens */
+        margin-right: 5%;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-nav, .bottom-nav {
+        flex-direction: column;
+    }
+    .nav-logo { margin-bottom: 15px; }
+    .nav-links { text-align: center; margin-bottom: 10px; }
+    .nav-links a { margin: 0 8px; display: inline-block; padding: 5px 0;}
+    .nav-left, .nav-right { width: 100%; display: flex; justify-content: center; flex-wrap: wrap; }
+
+
+    .hero-text h1 { font-size: 2em; }
+    .garage-car-image { max-width: 90%; }
+    .car-premium-garage-section h3 {
+        position: static; /* Simpler positioning on mobile */
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+    }
+
+    .slider-arrow { display: none; } /* Simpler: hide arrows, rely on swipe or just show static cards */
+    .car-card {
+        min-width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    .slider-track {
+        flex-direction: column; /* Stack cards if not swipable */
+        transform: none !important; /* Disable JS transform */
+    }
+}
+</style>
+<body>
+    <div class="website-wrapper">
+        <!-- Header & Hero -->
+        <header class="main-header">
+            <div class="container">
+                <nav class="top-nav">
+                    <div class="nav-links nav-left">
+                        <a href="#">Home</a>
+                        <a href="#">Cars</a>
+                        <a href="#">Moto</a>
+                        <a href="#">Gallery</a>
+                    </div>
+                    <div class="nav-logo">
+                        <img src="/PHOTO/logo-removebg-preview.png" alt="BMW Logo" class="logo">
+                        <span>BMW</span>
+                    </div>
+                    <div class="nav-links nav-right">
+                        <a href="#">Buy Back</a>
+                        <a href="#">Services</a>
+                        <a href="#">Contact us</a>
+                    </div>
+                </nav>
+            </div>
+
+            <section class="hero-section">
+                <div class="container hero-content-container">
+                    <div class="hero-text">
+                        <h1>BMW PREMIUM SELECTION</h1>
+                        <p>Rolling Automobiles Certificates. losing to continue</p>
+                        <button class="btn btn-primary">Find Your BMW Car</button>
+                    </div>
+                    <div class="hero-image">
+                        <img src="/PHOTO/8-removebg-preview.png" alt="Red BMW i8">
+                    </div>
+                </div>
+            </section>
+        </header>
+
+        <main>
+            <!-- Discover BMW Section -->
+            <section class="discover-bmw-section">
+                <div class="section-background" style="background-image: url('images/bmw-interior-bg.jpg');"></div>
+                <div class="container content-overlap">
+                    <div class="text-content">
+                        <h2>DISCOVER BMW PREMIUM SELECTION</h2>
+                        <p>For us, quality is not just a promise, it is also a basic principle. Only cars that meet predefined standards are certified.</p>
+                        <p>When choosing a BMW Premium Selection certified car, you make a good choice. This is due to the fact that the car will have already completed the 360° verification - which consists of rigorous checks before obtaining the BMW Premium Selection certificate.</p>
+                        <button class="btn btn-secondary">Read More</button>
+                    </div>
+                    <div class="image-content">
+                        <img src="/PHOTO/7-removebg-preview.png" alt="White BMW 6 Series">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Service Premium Selection Section -->
+            <section class="service-selection-section">
+                <div class="section-background" style="background-image: url('images/blue-bmw-bg.jpg');"></div>
+                 <div class="container content-overlap-reverse">
+                    <div class="image-content-gallery">
+                        <img src="/PHOTO/2-removebg-preview.png" alt="Car Rear Detail">
+                        <img src="/PHOTO/3-removebg-preview.png" alt="Car Grille Detail">
+                        <img src="/PHOTO/4-removebg-preview.png" alt="Car Front Detail">
+                    </div>
+                    <div class="text-content">
+                        <h2>SERVICE PREMIUM SELECTION</h2>
+                        <p>For us, quality is not just a promise, it is also a basic principle. Only cars that meet predefined standards are certified.</p>
+                        <p>When choosing a BMW Premium Selection certified car, you make a good choice. This is due to the fact that the car will have already completed the 360° verification - BMW Premium Selection certificate.</p>
+                        <button class="btn btn-secondary">Read More</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Car Premium Selection (Garage) -->
+            <section class="car-premium-garage-section" style="background-image: url('images/garage-bg.jpg');">
+                <div class="container garage-content">
+                    <h3>CAR PREMIUM SELECTION</h3>
+                    <img src="/PHOTO/5-removebg-preview.png" alt="Black BMW i8 in Garage" class="garage-car-image">
+                    <div class="progress-bar-visual">
+                        <div class="progress-indicator"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Premium Car Section -->
+            <section class="featured-cars-section">
+                <div class="container">
+                    <h2>FEATURED PREMIUM CAR</h2>
+                    <div class="slider-container">
+                        <button class="slider-arrow prev-arrow" id="prevBtn"><</button>
+                        <div class="slider-track-container">
+                            <div class="slider-track" id="sliderTrack">
+                                <div class="car-card">
+                                    <img src="/PHOTO/11-removebg-preview.png" alt="BMW Seria 3 Sedan">
+                                    <h4>BMW Seria 3 Sedan</h4>
+                                    <p class="model-detail">BMW Premium Selection 320d xDrive Sport Line</p>
+                                    <p class="spec">190 CP (140 kW)</p>
+                                    <p class="price">Preț brut: 37.961,00 $</p>
+                                    <p class="price-net">Preț net: 31.900,00 $</p>
+                                    <button class="btn btn-tertiary">Read More</button>
+                                </div>
+                                <div class="car-card">
+                                    <img src="/PHOTO/9-removebg-preview.png" alt="BMW Seria 2 Active Tourer">
+                                    <h4>BMW Seria 2 Active Tourer</h4>
+                                    <p class="model-detail">BMW Premium Selection 218d xDrive Advantage</p>
+                                    <p class="spec">150 CP (110 kW)</p>
+                                    <p class="price">Preț brut: 37.961,00 $</p>
+                                    <p class="price-net">Preț net: 31.900,00 $</p>
+                                    <button class="btn btn-tertiary">Read More</button>
+                                </div>
+                                <!-- Add more car cards for a functional slider -->
+                                <div class="car-card"> <!-- Example extra card -->
+                                    <img src="/PHOTO/10-removebg-preview (1).png" alt="Another BMW">
+                                    <h4>BMW Seria 5 Touring</h4>
+                                    <p class="model-detail">BMW Premium Selection 520d Luxury Line</p>
+                                    <p class="spec">190 CP (140 kW)</p>
+                                    <p class="price">Preț brut: 45.000,00 €</p>
+                                    <p class="price-net">Preț net: 38.500,00 €</p>
+                                    <button class="btn btn-tertiary">Read More</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="slider-arrow next-arrow" id="nextBtn">></button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="container">
+                <nav class="bottom-nav">
+                    <div class="nav-links nav-left">
+                        <a href="#">Home</a>
+                        <a href="#">Cars</a>
+                        <a href="#">Moto</a>
+                        <a href="#">Gallery</a>
+                    </div>
+                    <div class="nav-logo">
+                        <img src="/PHOTO/logo-removebg-preview.png" alt="BMW Logo" class="logo">
+                        <span>BMW</span>
+                    </div>
+                    <div class="nav-links nav-right">
+                        <a href="#">Buy Back</a>
+                        <a href="#">Services</a>
+                        <a href="#">Contact us</a>
+                    </div>
+                </nav>
+                
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js">
+        document.addEventListener('DOMContentLoaded', () => {
+    const sliderTrack = document.getElementById('sliderTrack');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (sliderTrack && prevBtn && nextBtn) {
+        const cards = sliderTrack.querySelectorAll('.car-card');
+        if (cards.length > 0) {
+            let cardWidth = cards[0].offsetWidth; // Includes padding, border
+            let cardMarginRight = parseInt(window.getComputedStyle(cards[0]).marginRight);
+            let slideWidth = cardWidth + cardMarginRight; // Total width of one slide item
+
+            let currentIndex = 0;
+            // Number of cards visible at once. Adjust if you change .car-card min-width
+            // For this CSS, it's roughly 2 cards.
+            const cardsToShow = 2;
+            // Max index should allow the last 'cardsToShow' items to be visible
+            let maxIndex = Math.max(0, cards.length - cardsToShow);
+
+            function updateSliderPosition() {
+                sliderTrack.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+            }
+
+            function recalculateSliderDimensions() {
+                if (cards.length > 0) {
+                    cardWidth = cards[0].offsetWidth;
+                    cardMarginRight = parseInt(window.getComputedStyle(cards[0]).marginRight);
+                    slideWidth = cardWidth + cardMarginRight;
+                    maxIndex = Math.max(0, cards.length - cardsToShow);
+                    // Ensure currentIndex is not out of bounds after resize
+                    if (currentIndex > maxIndex) {
+                        currentIndex = maxIndex;
+                    }
+                    updateSliderPosition();
+                }
+            }
+
+
+            nextBtn.addEventListener('click', () => {
+                if (currentIndex < maxIndex) {
+                    currentIndex++;
+                    updateSliderPosition();
+                } else {
+                    // Optional: Loop back to start
+                    // currentIndex = 0;
+                    // updateSliderPosition();
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateSliderPosition();
+                } else {
+                    // Optional: Loop to end
+                    // currentIndex = maxIndex;
+                    // updateSliderPosition();
+                }
+            });
+
+            // Initial position
+            recalculateSliderDimensions(); // Use this to set initial dimensions correctly
+
+            // Recalculate on resize
+            window.addEventListener('resize', recalculateSliderDimensions);
+
+        }
+    } else {
+        console.warn("Slider elements not found. Slider functionality will not work.");
+    }
+});
+    </script>
+</body>
+</html>

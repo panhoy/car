@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #2c3e50; /* Midnight Blue */
+    color: #ecf0f1; /* Clouds */
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.game-container {
+    background-color: #34495e; /* Wet Asphalt */
+    padding: 25px 35px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+}
+
+h1 {
+    color: #f1c40f; /* Sun Flower */
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px;
+    background-color: #2c3e50;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.score-player, .score-computer {
+    text-align: center;
+}
+
+.score-player h2, .score-computer h2 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.2em;
+    color: #bdc3c7; /* Silver */
+}
+
+#playerScore, #computerScore {
+    font-size: 2em;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.choices {
+    margin-bottom: 25px;
+}
+
+.choices p {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+}
+
+.choice-btn {
+    background-color: #e67e22; /* Carrot */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    margin: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.choice-btn:hover {
+    background-color: #d35400; /* Pumpkin */
+}
+.choice-btn:active {
+    transform: scale(0.95);
+}
+
+.results {
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #2980b9; /* Belize Hole */
+    border-radius: 8px;
+}
+
+#roundOutcome {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    min-height: 1.5em; /* Prevent layout jump */
+}
+.results .win { color: #2ecc71; } /* Emerald */
+.results .lose { color: #e74c3c; } /* Alizarin */
+.results .tie { color: #f1c40f; } /* Sun Flower */
+
+
+.round-details p {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
+#resetButton {
+    background-color: #c0392b; /* Pomegranate */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+#resetButton:hover {
+    background-color: #a93226; /* Darker Pomegranate */
+}
+
+/* Basic responsiveness */
+@media (max-width: 400px) {
+    h1 {
+        font-size: 2em;
+    }
+    .choice-btn {
+        padding: 10px 15px;
+        font-size: 1em;
+        display: block;
+        width: 80%;
+        margin: 10px auto;
+    }
+    .scoreboard {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Rock, Paper, Scissors!</h1>
+
+        <div class="scoreboard">
+            <div class="score-player">
+                <h2>You</h2>
+                <p id="playerScore">0</p>
+            </div>
+            <div class="score-computer">
+                <h2>Computer</h2>
+                <p id="computerScore">0</p>
+            </div>
+        </div>
+
+        <div class="choices">
+            <p>Choose your weapon:</p>
+            <button class="choice-btn" id="rock">Rock ✊</button>
+            <button class="choice-btn" id="paper">Paper ✋</button>
+            <button class="choice-btn" id="scissors">Scissors ✌️</button>
+        </div>
+
+        <div class="results">
+            <p id="roundOutcome">Make your move!</p>
+            <div class="round-details">
+                <p>Your choice: <span id="playerChoiceDisplay">-</span></p>
+                <p>Computer's choice: <span id="computerChoiceDisplay">-</span></p>
+            </div>
+        </div>
+
+        <button id="resetButton">Reset Scores</button>
+    </div>
+
+    <script src="script.js">
+        // DOM Elements
+const playerScoreDisplay = document.getElementById('playerScore');
+const computerScoreDisplay = document.getElementById('computerScore');
+const roundOutcomeDisplay = document.getElementById('roundOutcome');
+const playerChoiceDisplay = document.getElementById('playerChoiceDisplay');
+const computerChoiceDisplay = document.getElementById('computerChoiceDisplay');
+const rockButton = document.getElementById('rock');
+const paperButton = document.getElementById('paper');
+const scissorsButton = document.getElementById('scissors');
+const resetButton = document.getElementById('resetButton');
+
+// Game Variables
+let playerScore = 0;
+let computerScore = 0;
+const choices = ['rock', 'paper', 'scissors'];
+
+// Event Listeners
+rockButton.addEventListener('click', () => playGame('rock'));
+paperButton.addEventListener('click', () => playGame('paper'));
+scissorsButton.addEventListener('click', () => playGame('scissors'));
+resetButton.addEventListener('click', resetGame);
+
+// Functions
+function getComputerChoice() {
+    const randomIndex = Math.floor(Math.random() * choices.length);
+    return choices[randomIndex];
+}
+
+function playGame(playerChoice) {
+    const computerChoice = getComputerChoice();
+    const winner = determineWinner(playerChoice, computerChoice);
+
+    // Update displays
+    playerChoiceDisplay.textContent = capitalize(playerChoice);
+    computerChoiceDisplay.textContent = capitalize(computerChoice);
+
+    if (winner === 'player') {
+        playerScore++;
+        roundOutcomeDisplay.textContent = `You Win! ${capitalize(playerChoice)} beats ${capitalize(computerChoice)}.`;
+        roundOutcomeDisplay.className = 'win'; // Add class for styling
+    } else if (winner === 'computer') {
+        computerScore++;
+        roundOutcomeDisplay.textContent = `You Lose! ${capitalize(computerChoice)} beats ${capitalize(playerChoice)}.`;
+        roundOutcomeDisplay.className = 'lose'; // Add class for styling
+    } else {
+        roundOutcomeDisplay.textContent = `It's a Tie! Both chose ${capitalize(playerChoice)}.`;
+        roundOutcomeDisplay.className = 'tie'; // Add class for styling
+    }
+
+    updateScoreboard();
+}
+
+function determineWinner(player, computer) {
+    if (player === computer) {
+        return 'tie';
+    }
+    if (
+        (player === 'rock' && computer === 'scissors') ||
+        (player === 'paper' && computer === 'rock') ||
+        (player === 'scissors' && computer === 'paper')
+    ) {
+        return 'player';
+    }
+    return 'computer';
+}
+
+function updateScoreboard() {
+    playerScoreDisplay.textContent = playerScore;
+    computerScoreDisplay.textContent = computerScore;
+}
+
+function resetGame() {
+    playerScore = 0;
+    computerScore = 0;
+    updateScoreboard();
+    roundOutcomeDisplay.textContent = 'Make your move!';
+    roundOutcomeDisplay.className = ''; // Reset class
+    playerChoiceDisplay.textContent = '-';
+    computerChoiceDisplay.textContent = '-';
+}
+
+function capitalize(string) {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+// Initial setup
+resetGame(); // To set initial text and scores
+    </script>
+</body>
+</html>

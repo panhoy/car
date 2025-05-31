@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Cave Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(45deg, #2c1810, #4a2c2a, #1a1a2e);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 900px;
+            height: 600px;
+            background: linear-gradient(180deg, #0f0f23 0%, #2d1b69 50%, #11131f 100%);
+            border: 3px solid #9d4edd;
+            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(157, 78, 221, 0.4);
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        #hud {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: #e0aaff;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(224, 170, 255, 0.8);
+            z-index: 10;
+        }
+
+        #gameComplete {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #c77dff;
+            background: rgba(15, 15, 35, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid #c77dff;
+            display: none;
+            box-shadow: 0 0 30px rgba(199, 125, 255, 0.5);
+        }
+
+        #gameComplete h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(199, 125, 255, 0.8);
+            background: linear-gradient(45deg, #c77dff, #e0aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #gameComplete p {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #e0aaff;
+        }
+
+        #newGameBtn {
+            background: linear-gradient(45deg, #9d4edd, #c77dff);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);
+        }
+
+        #newGameBtn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(157, 78, 221, 0.6);
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #c77dff;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .crystal-bg {
+            position: absolute;
+            background: radial-gradient(circle, rgba(199, 125, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 0.1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="900" height="600"></canvas>
+        
+        <div id="hud">
+            <div>Crystals: <span id="crystals">0</span> / <span id="totalCrystals">8</span></div>
+            <div>Level: <span id="level">1</span></div>
+            <div>Lives: <span id="lives">3</span></div>
+        </div>
+
+        <div id="gameComplete">
+            <h2>CAVE CONQUERED!</h2>
+            <p>You collected all the crystals!</p>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <button id="newGameBtn">NEW ADVENTURE</button>
+        </div>
+
+        <div id="controls">
+            ARROW KEYS to move • SPACE to jump • Collect all crystals to win!
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let game = {
+            player: {
+                x: 50,
+                y: 450,
+                width: 25,
+                height: 25,
+                velX: 0,
+                velY: 0,
+                speed: 4,
+                jumpPower: 12,
+                grounded: false,
+                color: '#e0aaff'
+            },
+            platforms: [
+                {x: 0, y: 550, width: 200, height: 50},
+                {x: 250, y: 480, width: 120, height: 20},
+                {x: 420, y: 420, width: 100, height: 20},
+                {x: 580, y: 360, width: 140, height: 20},
+                {x: 750, y: 300, width: 150, height: 20},
+                {x: 100, y: 320, width: 80, height: 20},
+                {x: 300, y: 250, width: 100, height: 20},
+                {x: 500, y: 180, width: 120, height: 20},
+                {x: 700, y: 120, width: 200, height: 20}
+            ],
+            crystals: [
+                {x: 280, y: 440, collected: false},
+                {x: 450, y: 380, collected: false},
+                {x: 620, y: 320, collected: false},
+                {x: 130, y: 280, collected: false},
+                {x: 330, y: 210, collected: false},
+                {x: 530, y: 140, collected: false},
+                {x: 780, y: 80, collected: false},
+                {x: 820, y: 260, collected: false}
+            ],
+            enemies: [
+                {x: 250, y: 460, width: 20, height: 20, speed: 1, dir: 1, range: 120, startX: 250},
+                {x: 580, y: 340, width: 20, height: 20, speed: 1.5, dir: 1, range: 140, startX: 580},
+                {x: 300, y: 230, width: 20, height: 20, speed: 1, dir: 1, range: 100, startX: 300}
+            ],
+            particles: [],
+            keys: {},
+            crystalsCollected: 0,
+            level: 1,
+            lives: 3,
+            gameRunning: true,
+            gravity: 0.5
+        };
+
+        // Create background crystals
+        function createBackgroundCrystals() {
+            for (let i = 0; i < 8; i++) {
+                const crystal = document.createElement('div');
+                crystal.className = 'crystal-bg';
+                crystal.style.left = Math.random() * 800 + 'px';
+                crystal.style.top = Math.random() * 500 + 'px';
+                crystal.style.width = 40 + Math.random() * 60 + 'px';
+                crystal.style.height = crystal.style.width;
+                crystal.style.animationDelay = Math.random() * 3 + 's';
+                document.getElementById('gameContainer').appendChild(crystal);
+            }
+        }
+
+        // Input handling
+        document.addEventListener('keydown', (e) => {
+            game.keys[e.code] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            game.keys[e.code] = false;
+        });
+
+        // Update player
+        function updatePlayer() {
+            const player = game.player;
+            
+            // Horizontal movement
+            if (game.keys['ArrowLeft']) {
+                player.velX = -player.speed;
+            } else if (game.keys['ArrowRight']) {
+                player.velX = player.speed;
+            } else {
+                player.velX *= 0.8; // Friction
+            }
+
+            // Jumping
+            if (game.keys['Space'] && player.grounded) {
+                player.velY = -player.jumpPower;
+                player.grounded = false;
+            }
+
+            // Apply gravity
+            if (!player.grounded) {
+                player.velY += game.gravity;
+            }
+
+            // Update position
+            player.x += player.velX;
+            player.y += player.velY;
+
+            // Keep player in bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y > canvas.height) {
+                // Player fell off screen
+                game.lives--;
+                if (game.lives <= 0) {
+                    restartGame();
+                } else {
+                    respawnPlayer();
+                }
+            }
+
+            // Platform collision
+            player.grounded = false;
+            game.platforms.forEach(platform => {
+                if (player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y + player.height > platform.y &&
+                    player.y + player.height < platform.y + platform.height + 10) {
+                    
+                    if (player.velY >= 0) {
+                        player.y = platform.y - player.height;
+                        player.velY = 0;
+                        player.grounded = true;
+                    }
+                }
+            });
+        }
+
+        // Update enemies
+        function updateEnemies() {
+            game.enemies.forEach(enemy => {
+                enemy.x += enemy.speed * enemy.dir;
+                
+                // Bounce at range limits
+                if (enemy.x <= enemy.startX || enemy.x >= enemy.startX + enemy.range) {
+                    enemy.dir *= -1;
+                }
+
+                // Check collision with player
+                if (game.player.x < enemy.x + enemy.width &&
+                    game.player.x + game.player.width > enemy.x &&
+                    game.player.y < enemy.y + enemy.height &&
+                    game.player.y + game.player.height > enemy.y) {
+                    
+                    createParticles(enemy.x + enemy.width/2, enemy.y + enemy.height/2, '#ff6b6b');
+                    game.lives--;
+                    if (game.lives <= 0) {
+                        restartGame();
+                    } else {
+                        respawnPlayer();
+                    }
+                }
+            });
+        }
+
+        // Update crystals
+        function updateCrystals() {
+            game.crystals.forEach((crystal, index) => {
+                if (!crystal.collected) {
+                    // Check collision with player
+                    const dist = Math.sqrt(
+                        Math.pow(game.player.x + game.player.width/2 - crystal.x, 2) +
+                        Math.pow(game.player.y + game.player.height/2 - crystal.y, 2)
+                    );
+                    
+                    if (dist < 20) {
+                        crystal.collected = true;
+                        game.crystalsCollected++;
+                        createParticles(crystal.x, crystal.y, '#c77dff');
+                        
+                        if (game.crystalsCollected >= game.crystals.length) {
+                            winGame();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create particles
+        function createParticles(x, y, color) {
+            for (let i = 0; i < 12; i++) {
+                game.particles.push({
+                    x: x,
+                    y: y,
+                    velX: (Math.random() - 0.5) * 6,
+                    velY: (Math.random() - 0.5) * 6,
+                    life: 40,
+                    color: color,
+                    size: Math.random() * 3 + 1
+                });
+            }
+        }
+
+        // Update particles
+        function updateParticles() {
+            game.particles = game.particles.filter(particle => {
+                particle.x += particle.velX;
+                particle.y += particle.velY;
+                particle.life--;
+                particle.velY += 0.1; // Gravity
+                return particle.life > 0;
+            });
+        }
+
+        // Render game
+        function render() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw platforms
+            game.platforms.forEach(platform => {
+                const gradient = ctx.createLinearGradient(platform.x, platform.y, platform.x, platform.y + platform.height);
+                gradient.addColorStop(0, '#7209b7');
+                gradient.addColorStop(1, '#480ca8');
+                ctx.fillStyle = gradient;
+                ctx.shadowColor = '#9d4edd';
+                ctx.shadowBlur = 8;
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                ctx.shadowBlur = 0;
+            });
+
+            // Draw crystals
+            game.crystals.forEach(crystal => {
+                if (!crystal.collected) {
+                    const time = Date.now() * 0.005;
+                    ctx.save();
+                    ctx.translate(crystal.x, crystal.y);
+                    ctx.rotate(time);
+                    
+                    // Crystal glow
+                    ctx.shadowColor = '#c77dff';
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = '#e0aaff';
+                    ctx.fillRect(-8, -8, 16, 16);
+                    
+                    // Inner crystal
+                    ctx.fillStyle = '#c77dff';
+                    ctx.fillRect(-5, -5, 10, 10);
+                    ctx.shadowBlur = 0;
+                    ctx.restore();
+                }
+            });
+
+            // Draw enemies
+            game.enemies.forEach(enemy => {
+                ctx.fillStyle = '#ff6b6b';
+                ctx.shadowColor = '#ff6b6b';
+                ctx.shadowBlur = 10;
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                ctx.shadowBlur = 0;
+            });
+
+            // Draw player
+            ctx.fillStyle = game.player.color;
+            ctx.shadowColor = game.player.color;
+            ctx.shadowBlur = 12;
+            ctx.fillRect(game.player.x, game.player.y, game.player.width, game.player.height);
+            ctx.shadowBlur = 0;
+
+            // Draw particles
+            game.particles.forEach(particle => {
+                const alpha = particle.life / 40;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        // Update HUD
+        function updateHUD() {
+            document.getElementById('crystals').textContent = game.crystalsCollected;
+            document.getElementById('totalCrystals').textContent = game.crystals.length;
+            document.getElementById('level').textContent = game.level;
+            document.getElementById('lives').textContent = game.lives;
+        }
+
+        // Respawn player
+        function respawnPlayer() {
+            game.player.x = 50;
+            game.player.y = 450;
+            game.player.velX = 0;
+            game.player.velY = 0;
+        }
+
+        // Win game
+        function winGame() {
+            game.gameRunning = false;
+            document.getElementById('finalScore').textContent = game.crystalsCollected * 100 + game.lives * 50;
+            document.getElementById('gameComplete').style.display = 'block';
+        }
+
+        // Restart game
+        function restartGame() {
+            game = {
+                player: {
+                    x: 50,
+                    y: 450,
+                    width: 25,
+                    height: 25,
+                    velX: 0,
+                    velY: 0,
+                    speed: 4,
+                    jumpPower: 12,
+                    grounded: false,
+                    color: '#e0aaff'
+                },
+                platforms: [
+                    {x: 0, y: 550, width: 200, height: 50},
+                    {x: 250, y: 480, width: 120, height: 20},
+                    {x: 420, y: 420, width: 100, height: 20},
+                    {x: 580, y: 360, width: 140, height: 20},
+                    {x: 750, y: 300, width: 150, height: 20},
+                    {x: 100, y: 320, width: 80, height: 20},
+                    {x: 300, y: 250, width: 100, height: 20},
+                    {x: 500, y: 180, width: 120, height: 20},
+                    {x: 700, y: 120, width: 200, height: 20}
+                ],
+                crystals: [
+                    {x: 280, y: 440, collected: false},
+                    {x: 450, y: 380, collected: false},
+                    {x: 620, y: 320, collected: false},
+                    {x: 130, y: 280, collected: false},
+                    {x: 330, y: 210, collected: false},
+                    {x: 530, y: 140, collected: false},
+                    {x: 780, y: 80, collected: false},
+                    {x: 820, y: 260, collected: false}
+                ],
+                enemies: [
+                    {x: 250, y: 460, width: 20, height: 20, speed: 1, dir: 1, range: 120, startX: 250},
+                    {x: 580, y: 340, width: 20, height: 20, speed: 1.5, dir: 1, range: 140, startX: 580},
+                    {x: 300, y: 230, width: 20, height: 20, speed: 1, dir: 1, range: 100, startX: 300}
+                ],
+                particles: [],
+                keys: {},
+                crystalsCollected: 0,
+                level: 1,
+                lives: 3,
+                gameRunning: true,
+                gravity: 0.5
+            };
+            document.getElementById('gameComplete').style.display = 'none';
+            gameLoop();
+        }
+
+        // Main game loop
+        function gameLoop() {
+            if (!game.gameRunning) return;
+
+            updatePlayer();
+            updateEnemies();
+            updateCrystals();
+            updateParticles();
+            render();
+            updateHUD();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Event listeners
+        document.getElementById('newGameBtn').addEventListener('click', restartGame);
+
+        // Initialize
+        createBackgroundCrystals();
+        gameLoop();
+    </script>
+</body>
+</html>
